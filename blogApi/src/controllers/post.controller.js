@@ -89,20 +89,37 @@ try {
     Check if there are no posts.
     Return the posts. */
         //Pagination
-        const page = parseInt(req.query.page) || 1;
+        const page = Math.max(parseInt(req.query.page) || 1, 1);
         const requestedLimit = parseInt(req.query.limit) || 10;
       
         //to avoid this (?page=1&limit=1000000 ) kind of req where sending limit lakh million
         const limit = Math.min(requestedLimit, 50)
         
         const skip = (page-1)*limit
-        const posts = await Post.find()
+
+       // sorting -- .sort({createdAt: -1}) 
+
+       const sort = req.query.sort || "-createdAt"
+
+       // multiple filtering ?category = node just add in filter object and pass find(nameof_object)
+
+       const filter = {}
+
+      if(req.query.category) {
+            filter.category = req.query.category;
+      }
+      if (req.query.author) {
+            filter.author = req.query.author;
+       }
+
+        const posts = await Post.find(filter)
                                 .skip(skip)
                                 .limit(limit)
+                                .sort(sort)
                                 .populate("author", "username");
     
           if (!posts.length) {
-                return res.status(404).json({
+                return res.status(200).json({
                     message: "No posts found"
                 });
             }
