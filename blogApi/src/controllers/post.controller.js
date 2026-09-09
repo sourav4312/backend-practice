@@ -104,12 +104,24 @@ try {
        // multiple filtering ?category = node just add in filter object and pass find(nameof_object)
 
        const filter = {}
+      
 
-      if(req.query.category) {
-            filter.category = req.query.category;
-      }
+       //category is not in schema ---> always select filter on which field do you want 
+
+     // if(req.query.category) {
+       //     filter.category = req.query.category;
+      //}
       if (req.query.author) {
             filter.author = req.query.author;
+       }
+
+       // Searching in same filter object ?search=title_name
+
+       if(req.query.search) {
+         filter.title = {
+            $regex: req.query.search,
+            $options: "i"
+         }
        }
 
         const posts = await Post.find(filter)
