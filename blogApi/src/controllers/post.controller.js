@@ -88,10 +88,13 @@ try {
     Use Post.find() to get all posts.
     Check if there are no posts.
     Return the posts. */
-        
+        //Pagination
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-
+        const requestedLimit = parseInt(req.query.limit) || 10;
+      
+        //to avoid this (?page=1&limit=1000000 ) kind of req where sending limit lakh million
+        const limit = Math.min(requestedLimit, 50)
+        
         const skip = (page-1)*limit
         const posts = await Post.find()
                                 .skip(skip)
