@@ -88,7 +88,15 @@ try {
     Use Post.find() to get all posts.
     Check if there are no posts.
     Return the posts. */
-        const posts = await Post.find().populate("author", "username");
+        
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page-1)*limit
+        const posts = await Post.find()
+                                .skip(skip)
+                                .limit(limit)
+                                .populate("author", "username");
     
           if (!posts.length) {
                 return res.status(404).json({
